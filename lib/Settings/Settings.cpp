@@ -108,6 +108,15 @@ void Settings::patch(JsonObject parsedSettings) {
   this->setIfPresent(parsedSettings, FPSTR(SettingsKeys::PACKET_REPEATS_PER_LOOP), packetRepeatsPerLoop);
   this->setIfPresent(parsedSettings, FPSTR(SettingsKeys::HOME_ASSISTANT_DISCOVERY_PREFIX), homeAssistantDiscoveryPrefix);
   this->setIfPresent(parsedSettings, FPSTR(SettingsKeys::DEFAULT_TRANSITION_PERIOD), defaultTransitionPeriod);
+  this->setIfPresent(parsedSettings, FPSTR(SettingsKeys::WIREGUARD_ENABLED), wireGuardEnabled);
+  this->setIfPresent(parsedSettings, FPSTR(SettingsKeys::WG_PRIVATE_KEY), wgPrivateKey);
+  this->setIfPresent(parsedSettings, FPSTR(SettingsKeys::WG_PRESHARED_KEY), wgPresharedKey);
+  this->setIfPresent(parsedSettings, FPSTR(SettingsKeys::WG_PUBLIC_KEY), wgPublicKey);
+  this->setIfPresent(parsedSettings, FPSTR(SettingsKeys::WG_ENDPOINT_ADDRESS), wgEndpointAddress);
+  this->setIfPresent(parsedSettings, FPSTR(SettingsKeys::WG_ENDPOINT_PORT), wgEndpointPort);
+  this->setIfPresent(parsedSettings, FPSTR(SettingsKeys::WG_NETMASK), wgNetmask);
+  this->setIfPresent(parsedSettings, FPSTR(SettingsKeys::WG_REMOTE_IP), wgRemoteIp);
+  
 
   if (parsedSettings.containsKey(FPSTR(SettingsKeys::WIFI_MODE))) {
     this->wifiMode = wifiModeFromString(parsedSettings[FPSTR(SettingsKeys::WIFI_MODE)]);

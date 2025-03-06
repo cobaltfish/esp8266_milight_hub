@@ -22,7 +22,9 @@
 #include <HomeAssistantDiscoveryClient.h>
 #include <TransitionController.h>
 #include <ProjectWifi.h>
-
+#include <wireguardmanager.h>
+#include <esp_sntp.h>
+#include "RealTimeClock.h"
 #include <ESPId.h>
 
 #ifdef ESP8266
@@ -65,6 +67,9 @@ BulbStateUpdater* bulbStateUpdater = NULL;
 TransitionController transitions;
 
 std::vector<std::shared_ptr<MiLightUdpServer>> udpServers;
+
+WireGuardManager* wireGuardManager = NULL;
+RealTimeClock* rtc = NULL;
 
 /**
  * Set up UDP servers (both v5 and v6).  Clean up old ones if necessary.
@@ -511,6 +516,41 @@ void setup() {
 
     postConnectSetup();
   }
+
+  // Initialize and start WireGuard VPN if enabled and configured
+  if (settings.wireGuardEnabled) {
+  wireGuardManager = new WireGuardManager();
+
+  // Initialize SNTP
+  
+  RealTimeClock* rtc = new RealTimeClock();
+  rtc->setup();
+  wireGuardManager->set_srctime(rtc); // Set the RealTimeClock instance
+  delay(1000);
+  // Set WireGuard VPN configuration - currently got problems with the web interface and getting these written
+  // to the settings file, so hardcoding in prototype
+  wireGuardManager->set_address(settings.wgRemoteIp.c_str());
+  wireGuardManager->set_netmask(settings.wgNetmask.c_str());
+  wireGuardManager->set_private_key(settings.wgPrivateKey.c_str());
+  wireGuardManager->set_peer_endpoint(settings.wgEndpointAddress.c_str());
+  wireGuardManager->set_peer_public_key(settings.wgPublicKey.c_str());
+  wireGuardManager->set_peer_port(settings.wgEndpointPort.toInt());
+  wireGuardManager->set_keepalive(30);
+  wireGuardManager->set_reboot_timeout(900000);
+  wireGuardManager->set_preshared_key(settings.wgPresharedKey.c_str());
+  wireGuardManager->setup();
+  
+  // wireGuardManager->set_address("10.8.0.1");
+  // wireGuardManager->set_netmask("0.0.0.0");
+  // wireGuardManager->set_private_key("***");
+  // wireGuardManager->set_peer_endpoint("wireguard.example.com");
+  // wireGuardManager->set_peer_public_key("***");
+  // wireGuardManager->set_peer_port(51820);
+  // wireGuardManager->set_keepalive(30);
+  // wireGuardManager->set_reboot_timeout(900000);
+  // wireGuardManager->set_preshared_key("***");
+  
+  }
 }
 
 size_t i = 0;
@@ -551,6 +591,11 @@ void loop() {
     packetSender->loop();
 
     transitions.loop();
+  }
+
+  // Update WireGuard VPN if enabled and configured
+  if (wireGuardManager && settings.wireGuardEnabled) {
+    wireGuardManager->update();
   }
 }
 

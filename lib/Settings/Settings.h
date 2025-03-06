@@ -142,6 +142,14 @@ namespace SettingsKeys {
   static const char GATEWAY_CONFIGS[] PROGMEM = "gateway_configs";
   static const char GROUP_STATE_FIELDS[] PROGMEM = "group_state_fields";
   static const char GROUP_ID_ALIASES[] PROGMEM = "group_id_aliases";
+  static const char WIREGUARD_ENABLED[] PROGMEM = "wireGuardEnabled";
+  static const char WG_PRIVATE_KEY[] PROGMEM = "wgPrivateKey";
+  static const char WG_PRESHARED_KEY[] PROGMEM = "wgPresharedKey";
+  static const char WG_PUBLIC_KEY[] PROGMEM = "wgPublicKey";
+  static const char WG_ENDPOINT_ADDRESS[] PROGMEM = "wgEndpointAddress";
+  static const char WG_NETMASK[] PROGMEM = "wgNetmask";
+  static const char WG_REMOTE_IP[] PROGMEM = "wgRemoteIp";
+  static const char WG_ENDPOINT_PORT[] PROGMEM = "wgEndpointPort";
 }
 
 class Settings {
@@ -187,7 +195,15 @@ public:
     wifiMode(WifiMode::G),
     defaultTransitionPeriod(500),
     groupIdAliasNextId(0),
-    _autoRestartPeriod(0)
+    _autoRestartPeriod(0),
+    wireGuardEnabled(false),
+    wgPrivateKey(""),
+    wgPresharedKey(""),
+    wgPublicKey(""),
+    wgEndpointAddress(""),
+    wgEndpointPort(""),
+    wgNetmask(""),
+    wgRemoteIp("")
   { }
 
   ~Settings() = default;
@@ -267,6 +283,15 @@ public:
   WifiMode wifiMode;
   uint16_t defaultTransitionPeriod;
   size_t groupIdAliasNextId;
+  bool wireGuardEnabled;
+  String wgPrivateKey;
+  String wgPresharedKey;
+  String wgPublicKey;
+  String wgEndpointAddress;
+  String wgEndpointPort;
+  String wgNetmask;
+  String wgRemoteIp;
+
 
   static WifiMode wifiModeFromString(const String& mode);
   static String wifiModeToString(WifiMode mode);
