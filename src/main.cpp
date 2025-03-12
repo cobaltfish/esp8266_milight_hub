@@ -525,8 +525,12 @@ void setup() {
   
   RealTimeClock* rtc = new RealTimeClock();
   rtc->setup();
-  wireGuardManager->set_srctime(rtc); // Set the RealTimeClock instance
-  delay(1000);
+  // should this be retried if it fails, and then redo wg setup?
+  struct tm timeinfo = rtc->now();
+  if (mktime(&timeinfo) > 1609459200) {
+    Serial.println("RTC set, running wg setup");
+  
+    wireGuardManager->set_srctime(rtc); // Set the RealTimeClock instance
   // Set WireGuard VPN configuration - currently got problems with the web interface and getting these written
   // to the settings file, so hardcoding in prototype
   wireGuardManager->set_address(settings.wgRemoteIp.c_str());
@@ -538,7 +542,6 @@ void setup() {
   wireGuardManager->set_keepalive(30);
   wireGuardManager->set_reboot_timeout(900000);
   wireGuardManager->set_preshared_key(settings.wgPresharedKey.c_str());
-  wireGuardManager->setup();
   
   // wireGuardManager->set_address("10.8.0.1");
   // wireGuardManager->set_netmask("0.0.0.0");
@@ -549,7 +552,8 @@ void setup() {
   // wireGuardManager->set_keepalive(30);
   // wireGuardManager->set_reboot_timeout(900000);
   // wireGuardManager->set_preshared_key("***");
-  
+  wireGuardManager->setup();
+  }
   }
 }
 

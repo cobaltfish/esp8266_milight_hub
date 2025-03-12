@@ -12,6 +12,7 @@ class RealTimeClock {
   void setup();
   void add_on_time_sync_callback(std::function<void()> callback);
   struct tm now();
+  bool isValidTime(const struct tm& timeinfo);
   std::string get_current_time_str();
   void synchronize_epoch_(uint32_t epoch);
 

@@ -14,7 +14,14 @@ void RealTimeClock::setup() {
   // Wait for time to be set
   time_t now = 0;
   struct tm timeinfo;
+  unsigned long startMillis = millis(); // Record the start time
+  const unsigned long timeout = 30000; // 30 seconds timeout
+
   while (timeinfo.tm_year < (2016 - 1900)) {
+    if (millis() - startMillis >= timeout) {
+      Serial.println(F("\nTime synchronization timeout."));
+      return; // Exit the setup method if timeout occurs
+    }
     delay(1000);
     time(&now);
     localtime_r(&now, &timeinfo);
@@ -32,6 +39,10 @@ struct tm RealTimeClock::now() {
   struct tm timeinfo;
   localtime_r(&now, &timeinfo);
   return timeinfo;
+}
+
+bool RealTimeClock::isValidTime(const struct tm& timeinfo) {
+  return (timeinfo.tm_year >= (2016 - 1900));
 }
 
 std::string RealTimeClock::get_current_time_str() {
